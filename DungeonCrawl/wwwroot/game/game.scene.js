@@ -59,7 +59,7 @@ class GameScene extends Phaser.Scene {
             this.turnManager.refresh();
         }
 
-        this.turnManager.turn();
+        this.turnManager.turn(this.tweens, this.dungeon);
     }
 
     /** @return {Dungeon} */
@@ -71,8 +71,12 @@ class GameScene extends Phaser.Scene {
     
     /** @return {PlayerCharacter} */
     initPlayer() {
-        const cursorKeys = this.input.keyboard.createCursorKeys();
-        return new PlayerCharacter(this.dungeon.map, cursorKeys, 4, 4);
+        const cursorKeys = this.input.keyboard.createCursorKeys(),
+              player     = new PlayerCharacter(cursorKeys, 4, 4);
+        
+        player.sprite = this.dungeon.initSprite(player.x, player.y, this.add, this.spriteSheetKey, player.tile);
+        
+        return player;
     }
 }
 

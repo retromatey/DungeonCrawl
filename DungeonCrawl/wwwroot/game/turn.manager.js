@@ -1,19 +1,16 @@
 class TurnManager {
-    
-    /** @return {number} */
-    static get interval() { return 150; }
-    
+        
     /** @return {Set.<Entity>} */
     get entities() { return this._entities; }
     
     /** @return {number} */
-    get lastCall() { return this._lastCall; }
+    get currentEntityIndex() { return this._currentEntityIndex; }
     /** @param {number} value */
-    set lastCall(value) { this._lastCall = value; }
+    set currentEntityIndex(value) { this._currentEntityIndex = value; }
     
     constructor() {
         this._entities = new Set();
-        this._lastCall = Date.now();
+        this._currentEntityIndex = 0;
     }
 
     /**
@@ -37,23 +34,25 @@ class TurnManager {
     
     refresh() {
         this.entities.forEach(m => m.refresh());
+        this.currentEntityIndex = 0;
     }
-    
-    turn() {
-        const now   = Date.now(),
-              limit = this.lastCall + TurnManager.interval;
+
+    /**
+     * @param {Phaser.Tweens.TweenManager} tweenManager
+     * @param {Dungeon} dungeon
+     */
+    turn(tweenManager, dungeon) {
         
-        if (now > limit) {
+        if (this.entities.size > 0) {
+            const entities      = [...this.entities],
+                  currentEntity = entities[this.currentEntityIndex];
             
-            for (const entity of this.entities) {
+            if (currentEntity.over() === false) {
+                currentEntity.turn(tweenManager, dungeon);
                 
-                if (entity.over() === false) {
-                    entity.turn();
-                    break;
-                }                
+            } else {
+                this.currentEntityIndex += 1;
             }
-            
-            this.lastCall = Date.now();
         }
     }
 }
