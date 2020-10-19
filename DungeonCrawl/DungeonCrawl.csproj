@@ -47,6 +47,7 @@
 
     <ItemGroup>
       <Folder Include="wwwroot\css" />
+      <Folder Include="wwwroot\game\lib" />
     </ItemGroup>
 
 

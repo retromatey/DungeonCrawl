@@ -2,6 +2,11 @@
 class Entity {
 
     /** @return {number} */
+    get movementPoints() { return this._movementPoints; }
+    /** @param {number} value */
+    set movementPoints(value) { this._movementPoints = value; }
+
+    /** @return {number} */
     get x() { return this._x; }
     /** @param {number} value */
     set x(value) { this._x = value; }
@@ -30,9 +35,10 @@ class Entity {
      * @abstract
      * @param {Phaser.Tweens.TweenManager} tweenManager
      * @param {Dungeon} dungeon
+     * @param {PlayerCharacter} player
      * @return {undefined}
      */
-    turn(tweenManager, dungeon) {
+    turn(tweenManager, dungeon, player) {
         throw new Error('Entity.turn method not implemented');
     }
 

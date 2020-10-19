@@ -1,11 +1,6 @@
 import { Entity } from "./entity.js";
 
 class PlayerCharacter extends Entity {
-    
-    /** @return {number} */
-    get movementPoints() { return this._movementPoints; }
-    /** @param {number} value */
-    set movementPoints(value) { this._movementPoints = value; }
 
     /** @return {Phaser.Types.Input.Keyboard.CursorKeys} */
     get cursorKeys() { return this._cursorKeys; }
@@ -47,7 +42,7 @@ class PlayerCharacter extends Entity {
      * @override
      * @return {undefined}
      */
-    turn(tweenManager, dungeon) {
+    turn(tweenManager, dungeon, player) {
         let newX  = this.x,
             newY  = this.y,
             moved = false;

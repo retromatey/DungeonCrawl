@@ -40,15 +40,16 @@ class TurnManager {
     /**
      * @param {Phaser.Tweens.TweenManager} tweenManager
      * @param {Dungeon} dungeon
+     * @param {PlayerCharacter} player
      */
-    turn(tweenManager, dungeon) {
+    turn(tweenManager, dungeon, player) {
         
         if (this.entities.size > 0) {
             const entities      = [...this.entities],
                   currentEntity = entities[this.currentEntityIndex];
             
             if (currentEntity.over() === false) {
-                currentEntity.turn(tweenManager, dungeon);
+                currentEntity.turn(tweenManager, dungeon, player);
                 
             } else {
                 this.currentEntityIndex += 1;

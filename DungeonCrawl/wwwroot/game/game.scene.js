@@ -2,6 +2,7 @@ import {Dungeon} from "./dungeon.js";
 import {PlayerCharacter} from "./player.character.js";
 import {tileMapData} from "./tile.map.data.js";
 import {TurnManager} from "./turn.manager.js";
+import {Monster} from "./monster.js";
 
 class GameScene extends Phaser.Scene {
 
@@ -40,12 +41,22 @@ class GameScene extends Phaser.Scene {
     /**
      * @override
      */
-    create() {  
+    create() {        
         this._turnManager = new TurnManager();
         this._dungeon = this.initDungeon();
-        this._player = this.initPlayer();
         
+        this._player = this.initPlayer();
         this.turnManager.addEntity(this.player);
+
+        const monsters = [
+            this.initMonster(3, 8, 1),
+            this.initMonster(18, 18, 3),
+            this.initMonster(18, 2, 2)
+        ];
+        
+        for (const monster of monsters) {
+            this.turnManager.addEntity(monster);
+        }
     }
 
     /**
@@ -59,7 +70,7 @@ class GameScene extends Phaser.Scene {
             this.turnManager.refresh();
         }
 
-        this.turnManager.turn(this.tweens, this.dungeon);
+        this.turnManager.turn(this.tweens, this.dungeon, this.player);
     }
 
     /** @return {Dungeon} */
@@ -77,6 +88,20 @@ class GameScene extends Phaser.Scene {
         player.sprite = this.dungeon.initSprite(player.x, player.y, this.add, this.spriteSheetKey, player.tile);
         
         return player;
+    }
+    
+    /** 
+     * @param {number} startX
+     * @param {number} startY
+     * @param {number} totalMovementPoints
+     * @return {Monster} 
+     */
+    initMonster(startX, startY, totalMovementPoints) {
+        const monster = new Monster(startX, startY, totalMovementPoints);
+        
+        monster.sprite = this.dungeon.initSprite(monster.x, monster.y, this.add, this.spriteSheetKey, monster.tile);
+        
+        return monster;
     }
 }
 
