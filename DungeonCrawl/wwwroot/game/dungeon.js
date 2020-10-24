@@ -113,11 +113,104 @@ class Dungeon {
     /**
      * @param {number} x
      * @param {number} y
+     * @param {Entity[]} entities
      * @return {boolean}
      */
-    isWalkableTile(x, y) {
+    isWalkableTile(x, y, entities) {
+        
+        for (const entity of entities) {
+            
+            if (entity.x === x && entity.y === y) {
+                return false;
+            }
+        }
+        
         return this.rawTileMap[y][x] !== Dungeon.wall;
     }
+
+    /**
+     * @param {number} x
+     * @param {number} y
+     * @param {Entity[]} entities
+     * @return {undefined|Entity}
+     */
+    entityAtTile(x, y, entities) {
+
+        for (const entity of entities) {
+
+            if (entity.x === x && entity.y === y) {
+                return entity;
+            }
+        }
+        
+        return undefined;
+    }
+
+    /**
+     * @param {Entity} entity1
+     * @param {Entity} entity2
+     * @return {undefined|number}
+     */
+    distanceBetweenEntities(entity1, entity2) {
+        const convertedLevel = this.rawTileMap.map(m => m.map(n => n === Dungeon.wall ? 1 : 0)), // 0 is a walkable area, 1 is a blocked area
+              grid           = new PF.Grid(convertedLevel),
+              finder         = new PF.AStarFinder({ allowDiagonal: true }),
+              path           = finder.findPath(entity1.x, entity1.y, entity2.x, entity2.y, grid);
+        
+        if (path.length >= 2) {
+            return path.length;
+            
+        }
+        
+        return undefined;
+    }
+
+    /**
+     * @param {Entity} entity
+     * @param {TurnManager} turnManager
+     */
+    removeEntity(entity, turnManager) {
+        turnManager.entities.delete(entity);
+        entity.sprite.destroy();
+        entity.onDestroy();
+    }
+
+    /**
+     * @param {Entity} attacker
+     * @param {Entity} victim
+     * @param {Phaser.Tweens.TweenManager} tweenManager
+     * @param {TurnManager} turnManager
+     */
+    attackEntity(attacker, victim, tweenManager, turnManager) {
+        attacker.moving = true;
+        attacker.tweens = attacker.tweens || 0;
+        attacker.tweens += 1;
+        
+        tweenManager.add({
+            targets: attacker.sprite,
+            onComplete: () => {
+                attacker.sprite.x = this.map.tileToWorldX(attacker.x);
+                attacker.sprite.y = this.map.tileToWorldY(attacker.y);
+                attacker.moving = false;
+                attacker.tweens -= 1;
+                
+                let damage = attacker.attack();
+                victim.healthPoints -= damage;
+                console.log(`${attacker.name} does ${damage} damage to ${victim.name} which now has ${victim.healthPoints} life left`);
+                
+                if (victim.healthPoints <= 0) {
+                    this.removeEntity(victim, turnManager);
+                }
+            },
+            x: this.map.tileToWorldX(victim.x),
+            y: this.map.tileToWorldY(victim.y),
+            ease: 'Power2',
+            hold: 20,
+            duration: 80,
+            delay: attacker.tweens * 200,
+            yoyo: true
+        })
+    }    
 }
 
 export { Dungeon }

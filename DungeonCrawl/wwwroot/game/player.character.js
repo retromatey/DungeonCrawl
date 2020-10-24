@@ -18,6 +18,10 @@ class PlayerCharacter extends Entity {
         this._movementPoints = 1;
         this._tile = 4;
 
+        this._name = 'The Player';
+        this._actionPoints = 1;
+        this._healthPoints = 15;
+
         this._moving = false;
         this._cursorKeys = cursorKeys; 
     }
@@ -42,7 +46,7 @@ class PlayerCharacter extends Entity {
      * @override
      * @return {undefined}
      */
-    turn(tweenManager, dungeon, player) {
+    turn(tweenManager, dungeon, player, entities, turnManager) {
         let newX  = this.x,
             newY  = this.y,
             moved = false;
@@ -72,7 +76,7 @@ class PlayerCharacter extends Entity {
             if (moved) {
                 this.movementPoints -= 1;
                 
-                if (dungeon.isWalkableTile(newX, newY)) {
+                if (dungeon.isWalkableTile(newX, newY, entities)) {
                     const onComplete = () => {
                         this.moving = false;
                         this.x = newX;
@@ -84,6 +88,23 @@ class PlayerCharacter extends Entity {
                 }
             }
         }
+    }
+
+    /**
+     * @override
+     * @return {number}
+     */
+    attack() {
+        return 1;
+    }
+
+    /**
+     * @override
+     * @return {undefined}
+     */
+    onDestroy() {
+        alert('YOU DIED!!!');
+        location.reload();
     }
 }
 

@@ -49,7 +49,7 @@ class TurnManager {
                   currentEntity = entities[this.currentEntityIndex];
             
             if (currentEntity.over() === false) {
-                currentEntity.turn(tweenManager, dungeon, player);
+                currentEntity.turn(tweenManager, dungeon, player, entities, this);
                 
             } else {
                 this.currentEntityIndex += 1;
